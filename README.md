@@ -1,176 +1,225 @@
-# Nowcasting del IMAE
+# Nowcasting del IMAE: Desarrollo Iterativo de Modelos Econométricos
 
 ## Descripción general
 
-Este proyecto implementa un ejercicio de **nowcasting del Indicador Mensual de Actividad Económica (IMAE)** utilizando modelos econométricos simples con información contemporánea y rezagada.
+Este repositorio documenta el desarrollo progresivo de un sistema de nowcasting del Indicador Mensual de Actividad Económica (IMAE), cuyo objetivo es estimar el crecimiento económico en tiempo real antes de la publicación oficial de los datos.
 
-El objetivo del nowcasting es **estimar el crecimiento económico en tiempo real**, antes de que los datos oficiales estén completamente disponibles, utilizando variables que se publican con mayor frecuencia o menor rezago.
+El proyecto está estructurado como un proceso iterativo en dos etapas:
 
----
+- Primera iteración: construcción de un marco base con modelos econométricos tradicionales (OLS)
+- Segunda iteración: extensión del marco base mediante técnicas avanzadas de regularización y selección de variables
 
-## Enfoque metodológico
-
-El enfoque seguido en este proyecto se basa en:
-
-* Transformaciones de series macroeconómicas a tasas de crecimiento interanual (YoY en logaritmos)
-* Inclusión de rezagos de la variable objetivo (IMAE)
-* Incorporación de variables explicativas contemporáneas (ej. consumo con tarjetas, ocupación hotelera)
-* Uso de modelos lineales estimados en ventanas expansivas
-* Evaluación del desempeño mediante errores de pronóstico (RMSE)
-
-Además, se introducen **variables dummy** para capturar efectos estructurales asociados a la pandemia del COVID-19 y el período de rebote posterior.
+Este enfoque permite evidenciar cómo evoluciona un sistema de nowcasting al incorporar mayor sofisticación metodológica y un conjunto más amplio de información.
 
 ---
 
-## Flujo del proceso de nowcasting
+## Objetivos
 
-El proceso general es el siguiente:
-
-1. **Carga de datos**
-
-   * Se leen archivos CSV con series macroeconómicas.
-   * Se eliminan columnas innecesarias (como índices).
-
-2. **Transformación de variables**
-
-   * Se calcula el crecimiento interanual en logaritmos:
-
-     * ( \text{YoY} = \log(x_t / x_{t-12}) \times 100 )
-   * Se generan variables rezagadas (lags).
-   * Se construyen variables dummy para eventos específicos (COVID y rebote).
-
-3. **Análisis exploratorio**
-
-   * Visualización de la serie del IMAE.
-   * Análisis de autocorrelación (ACF y PACF).
-   * Pruebas de estacionariedad (ADF, PP, KPSS).
-
-4. **Construcción de modelos**
-   Se estiman varios modelos de regresión:
-
-   * Modelo base:
-
-     * IMAE en función de su propio rezago
-
-   * Modelo con consumo:
-
-     * Incluye consumo con tarjetas como variable explicativa
-
-   * Modelo extendido:
-
-     * Incluye consumo y ocupación hotelera
-
-5. **Nowcasting (ventana expansiva)**
-
-   * Para cada período ( t ):
-
-     * Se estima el modelo con datos hasta ( t )
-     * Se predice ( t+1 )
-   * Este proceso simula un entorno de tiempo real.
-
-6. **Evaluación del desempeño**
-
-   * Se calculan errores de pronóstico:
-
-     * Error = valor observado - nowcast
-   * Se calcula el RMSE:
-
-     * Para toda la muestra
-     * Para período post-COVID
-     * Para período pre-COVID
+- Construir un sistema de nowcasting paso a paso
+- Evaluar el aporte incremental de distintas metodologías
+- Identificar variables con mayor poder predictivo sobre el IMAE
+- Comparar modelos simples vs. modelos regularizados
+- Analizar la estabilidad del desempeño en distintos períodos (pre y post COVID)
 
 ---
 
-## Descripción del script nowcast_imae_1.R
+## Arquitectura del proyecto
 
-El archivo principal realiza las siguientes tareas:
+El repositorio se divide en dos componentes principales:
 
-### 1. Preparación de datos
+### 🔹 Iteración 1: Enfoque econométrico base (`nowcast_imae_1.R`)
 
-* Lectura de archivos:
+Esta primera versión establece las bases del sistema de nowcasting mediante herramientas econométricas estándar.
 
-  * `data1.csv`
-  * `data1_variable.csv`
-* Limpieza y selección de variables
-* Generación de transformaciones (YoY log)
+**Características principales:**
 
-### 2. Análisis exploratorio
+- Modelos lineales (OLS)
+- Inclusión de rezagos del IMAE
+- Incorporación de variables contemporáneas (ej. consumo, turismo)
+- Construcción manual de especificaciones
+- Evaluación mediante RMSE
+- Análisis exploratorio completo
 
-* Gráficos interactivos del IMAE (plotly)
-* Identificación visual de períodos de COVID y rebote
-* Análisis de autocorrelación
-* Pruebas de estacionariedad
+**Rol dentro del proyecto:**
 
-### 3. Ingeniería de variables
-
-* Creación de rezagos
-* Construcción de variables dummy
-* Integración de múltiples fuentes de datos
-
-### 4. Modelación
-
-* Estimación de modelos lineales (`lm`)
-* Inclusión progresiva de variables explicativas
-
-### 5. Simulación de nowcasting
-
-* Implementación de ventana expansiva
-* Generación de predicciones fuera de muestra
-
-### 6. Evaluación
-
-* Cálculo de errores de pronóstico
-* Comparación de modelos mediante RMSE
-* Evaluación por subperíodos (pre y post COVID)
+- Define el benchmark inicial
+- Permite entender la dinámica del IMAE
+- Proporciona una referencia para comparar mejoras posteriores
 
 ---
 
-## Estructura de los datos
+### 🔹 Iteración 2: Modelos avanzados (`nowcast_imae_2.R` + `gram_schmidt_forward.R`)
 
-Los datos utilizados contienen:
+La segunda iteración amplía el enfoque inicial incorporando técnicas modernas de modelación.
 
-* Identificadores temporales:
+**Mejoras introducidas:**
 
-  * Año (`ANO`)
-  * Mes (`MES`)
-* Variable objetivo:
+- Ridge Regression (glmnet) para mitigar sobreajuste
+- Selección automática de variables (Gram-Schmidt Forward Selection)
+- Evaluación más sistemática de múltiples modelos
+- Manejo de mayor dimensionalidad en variables explicativas
 
-  * IMAE
-* Variables explicativas:
+**Características principales:**
 
-  * Consumo con tarjetas
-  * Ocupación hotelera
-  * Otras variables macroeconómicas
+- Modelos autorregresivos regularizados
+- Modelos con múltiples combinaciones de variables macroeconómicas
+- Procedimientos automáticos de selección de variables
+- Comparación estructurada de desempeño
+
+**Rol dentro del proyecto:**
+
+- Mejora la capacidad predictiva
+- Reduce problemas de colinealidad
+- Permite escalar el sistema con más variables
+- Representa una versión más robusta del nowcasting
 
 ---
 
-## Interpretación
+## Enfoque metodológico común
 
-El ejercicio permite:
+Ambas iteraciones comparten un núcleo metodológico:
 
-* Evaluar qué variables mejoran el nowcast del IMAE
-* Analizar la estabilidad del modelo en distintos períodos
-* Medir el impacto de shocks estructurales (como COVID-19)
-* Comparar modelos simples vs. modelos con más información
+### Transformación de variables
 
+```math
+YoY = (\log(x_t) - \log(x_{t-12})) * 100
+```
+
+### Ingeniería de variables
+
+- Rezagos del IMAE
+- Variables contemporáneas
+- Dummies para:
+  - COVID-19
+  - Período de rebote
+
+### Evaluación en tiempo real
+
+- Simulación mediante ventanas expansivas
+- Estimación con información disponible en cada período
+
+### Métrica principal
+
+```math
+RMSE = sqrt(mean((y_t - \hat{y}_t)^2))
+```
+
+Evaluado en:
+
+- Muestra completa
+- Período pre-COVID
+- Período post-COVID
+
+---
+
+## Flujo general del proceso
+
+- Carga y limpieza de datos
+- Transformación (YoY, log, rezagos)
+- Análisis exploratorio
+- Construcción de modelos
+- Nowcasting con ventana expansiva
+- Evaluación (RMSE y análisis por subperíodos)
+
+---
+
+## Selección de variables (Iteración 2)
+
+Se implementa un algoritmo de Gram-Schmidt Forward Selection que:
+
+- Selecciona variables de forma secuencial
+- Evalúa contribuciones marginales al R²
+- Reduce colinealidad mediante ortogonalización
+- Se detiene cuando la mejora marginal es baja
+
+Esto permite identificar variables con información verdaderamente adicional.
+
+---
+
+## Modelos considerados
+
+- Modelo naive
+- Modelo autorregresivo (OLS)
+- Modelos con variables adicionales (consumo, turismo, etc.)
+- Modelo Ridge autorregresivo
+- Modelos Ridge ampliados
+- Modelo con variables seleccionadas automáticamente
+
+---
+
+## Datos requeridos
+
+### Variables temporales
+
+- ANO
+- MES
+
+### Variable objetivo
+
+- IMAE
+
+### Variables explicativas (ejemplos)
+
+- Consumo con tarjetas
+- Ocupación hotelera
+- Inflación
+- Ventas
+- Crédito
 
 ---
 
 ## Requisitos
 
-Paquetes utilizados en R:
+Paquetes en R:
 
-* tidyverse
-* dplyr
-* zoo
-* lubridate
-* plotly
-* forecast
-* tseries
-* glmnet
+- tidyverse
+- dplyr
+- zoo
+- lubridate
+- plotly
+- forecast
+- tseries
+- glmnet
+- openxlsx
+- modelsummary
 
 ---
 
-## Nota final
+## Ejecución
 
-Este proyecto ilustra un enfoque práctico y replicable de nowcasting con herramientas estándar de econometría, enfatizando la importancia de la información oportuna en el análisis macroeconómico.
+### Iteración 1
+
+```r
+source("nowcast_imae_1.R")
+```
+
+### Iteración 2
+
+```r
+source("nowcast_imae_2.R")
+```
+
+---
+
+## Interpretación y valor del enfoque iterativo
+
+El diseño en dos iteraciones permite:
+
+- Entender cómo un modelo base puede ser mejorado progresivamente
+- Medir el valor de:
+  - Regularización
+  - Selección automática de variables
+- Evaluar el trade-off entre simplicidad e información
+- Construir un sistema de nowcasting más robusto y escalable
+
+---
+
+## Conclusión
+
+Este repositorio no solo presenta modelos de nowcasting, sino que documenta el proceso de construcción de un sistema predictivo, pasando de:
+
+> Modelos econométricos simples → Modelos regularizados con selección de variables
+
+El resultado es un marco práctico, replicable y extensible para el monitoreo en tiempo real de la actividad económica.
+
+
