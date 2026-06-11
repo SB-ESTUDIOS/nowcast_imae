@@ -30,6 +30,8 @@ El repositorio se divide en dos componentes principales:
 ### 🔹 Iteración 1: Enfoque econométrico base (`nowcast_imae_1.R`)
 **Carpeta**: `1_naive_vs_modernos`
 
+**Blogpost**: https://medium.com/@SB-ESTUDIOS/proyectando-el-nivel-de-actividad-económica-el-caso-del-nowcast-del-imae-30abe4ae0589
+
 Esta primera versión establece las bases del sistema de nowcasting mediante herramientas econométricas estándar.
 
 **Características principales:**
