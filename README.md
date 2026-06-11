@@ -28,6 +28,7 @@ Este enfoque permite evidenciar cómo evoluciona un sistema de nowcasting al inc
 El repositorio se divide en dos componentes principales:
 
 ### 🔹 Iteración 1: Enfoque econométrico base (`nowcast_imae_1.R`)
+**Carpeta**: `1_naive_vs_modernos`
 
 Esta primera versión establece las bases del sistema de nowcasting mediante herramientas econométricas estándar.
 
@@ -49,7 +50,7 @@ Esta primera versión establece las bases del sistema de nowcasting mediante her
 ---
 
 ### 🔹 Iteración 2: Modelos avanzados (`nowcast_imae_2.R` + `gram_schmidt_forward.R`)
-
+**Carpeta**: `2_shrinkage_gram_schmidt`
 La segunda iteración amplía el enfoque inicial incorporando técnicas modernas de modelación.
 
 **Mejoras introducidas:**

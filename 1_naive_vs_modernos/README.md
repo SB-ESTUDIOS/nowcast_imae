@@ -1,4 +1,4 @@
-# Nowcasting del IMAE
+# Nowcasting del IMAE con método `naive`
 
 ## Descripción general
 
